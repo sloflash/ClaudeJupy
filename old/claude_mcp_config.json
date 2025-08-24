@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "jupyter-executor": {
+      "command": "python",
+      "args": ["mcp_jupyter_server.py"],
+      "env": {
+        "PYTHONPATH": "."
+      }
+    }
+  }
+}

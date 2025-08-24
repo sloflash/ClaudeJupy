@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-jupyter-mcp"
+version = "2.0.0"
+description = "UV-centric Jupyter kernel execution for Claude via MCP with enhanced error handling"
+authors = [{name = "Mayank Ketkar"}]
+dependencies = [
+    "fastmcp>=2.11.0",
+    "jupyter",
+    "ipykernel",
+    "nbformat",
+    "jupyter-client",
+    "torch>=2.8.0",
+    "numpy>=2.3.2",
+    "matplotlib>=3.10.5",
+]
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+    "ruff",
+    "mypy"
+]
+formatting = [
+    "black",
+    "isort"
+]
+
+[project.scripts]
+ml-jupyter-mcp = "ml_jupyter_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/mayankketkar/ml-jupyter-mcp"
+Repository = "https://github.com/mayankketkar/ml-jupyter-mcp"
+Issues = "https://github.com/mayankketkar/ml-jupyter-mcp/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ml_jupyter_mcp*"]
+
+[tool.setuptools.package-data]
+ml_jupyter_mcp = ["*.json", "*.toml"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -1,0 +1,120 @@
+{
+  "jupyter-executor": {
+    "description": "Jupyter notebook execution with automatic workflow",
+    "instructions": {
+      "workflow": "sequential_execution_with_wait",
+      "default_behavior": {
+        "cell_wait_time": 20,
+        "wait_unit": "seconds",
+        "kernel": ".venv",
+        "auto_verify_kernel": true,
+        "execution_pattern": [
+          "write_cell",
+          "execute_cell",
+          "wait_5_seconds",
+          "repeat"
+        ]
+      },
+      "thoughtful_execution": {
+        "be_deliberate": true,
+        "explain_before_executing": "Always explain what the code will do before running it",
+        "small_chunks": "Write 5-10 lines of code per cell maximum",
+        "one_concept_per_cell": "Each cell should focus on a single task or concept",
+        "validate_outputs": "Check outputs before proceeding to next cell",
+        "plan_approach": "Think through the solution before writing code",
+        "test_incrementally": "Test each piece of functionality as you build it"
+      },
+      "code_quality": {
+        "lines_per_cell": 10,
+        "max_lines_per_cell": 15,
+        "prefer_simple_code": true,
+        "add_print_statements": "Add print statements to verify intermediate results",
+        "use_descriptive_names": true,
+        "break_complex_operations": "Split complex operations into multiple cells"
+      },
+      "environment": {
+        "use_local_venv": true,
+        "venv_path": ".venv",
+        "package_manager": "uv",
+        "never_use_pip": true
+      },
+      "execution_rules": {
+        "sequential_only": true,
+        "batch_execution": false,
+        "wait_between_cells": true,
+        "wait_time_seconds": 5,
+        "verify_each_execution": true,
+        "save_checkpoint_every": 3
+      },
+      "error_handling": {
+        "on_module_not_found": "use_jupyter_ensure_dependencies",
+        "on_kernel_error": "restart_kernel_and_retry",
+        "max_retries": 2,
+        "on_error": "stop_and_analyze"
+      },
+      "rollback_strategy": {
+        "enabled": true,
+        "on_error": [
+          "1. Stop execution immediately",
+          "2. Analyze the error message",
+          "3. Save current notebook state",
+          "4. Try to understand what went wrong",
+          "5. If possible, revert the last cell",
+          "6. Try alternative approach",
+          "7. If still failing, restart kernel and rebuild step by step"
+        ],
+        "checkpoint_before": [
+          "Data transformations",
+          "Model training",
+          "File operations",
+          "API calls",
+          "Database operations"
+        ],
+        "save_intermediate_results": true
+      },
+      "alternative_approaches": {
+        "when_stuck": [
+          "Try a simpler approach first",
+          "Break the problem into smaller pieces",
+          "Use different library or method",
+          "Add more debugging output",
+          "Verify assumptions with simple test cases"
+        ],
+        "prefer_tested_solutions": true,
+        "start_simple_then_optimize": true
+      }
+    },
+    "default_workflow_steps": [
+      {
+        "step": 1,
+        "action": "jupyter_initialize",
+        "args": {"working_dir": "."}
+      },
+      {
+        "step": 2,
+        "action": "create_or_open_notebook",
+        "verify": "kernel_connected_to_local_venv"
+      },
+      {
+        "step": 3,
+        "action": "for_each_cell",
+        "pattern": {
+          "write": "jupyter_add_cell",
+          "execute": true,
+          "wait": "sleep 5"
+        }
+      }
+    ],
+    "typical_cell_count": 5,
+    "cell_examples": [
+      {
+        "cell": 1,
+        "content": "import time\\nimport datetime\\nprint(f'Cell 1 executed at: {datetime.datetime.now()}')"
+      },
+      {
+        "cell": 2,
+        "content": "result = perform_operation()\\nprint(f'Cell 2 result: {result}')"
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "comment": "MCP Configuration Templates for Jupyter Kernel Persistence Tool",
+  
+  "global_config": {
+    "description": "Add to ~/Library/Application Support/Claude/claude_desktop_config.json",
+    "note": "Replace YOUR_USERNAME with your actual username",
+    
+    "if_first_mcp_server": {
+      "mcpServers": {
+        "jupyter-executor": {
+          "command": "/Users/YOUR_USERNAME/claude-tools/jupyter/.venv/bin/python",
+          "args": ["/Users/YOUR_USERNAME/claude-tools/jupyter/mcp_jupyter_server.py"]
+        }
+      }
+    },
+    
+    "if_adding_to_existing": {
+      "jupyter-executor": {
+        "command": "/Users/YOUR_USERNAME/claude-tools/jupyter/.venv/bin/python",
+        "args": ["/Users/YOUR_USERNAME/claude-tools/jupyter/mcp_jupyter_server.py"]
+      }
+    }
+  },
+  
+  "per_project_config": {
+    "description": "Create as .claude/mcp_settings.json in your project",
+    "note": "Assumes tool files are copied to project root",
+    
+    "config": {
+      "mcpServers": {
+        "jupyter-executor": {
+          "command": ".venv/bin/python",
+          "args": ["mcp_jupyter_server.py"],
+          "env": {
+            "PYTHONPATH": "."
+          }
+        }
+      }
+    }
+  },
+  
+  "example_with_multiple_servers": {
+    "description": "Example with multiple MCP servers configured",
+    
+    "config": {
+      "mcpServers": {
+        "filesystem": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/YOUR_USERNAME/Documents"]
+        },
+        "jupyter-executor": {
+          "command": "/Users/YOUR_USERNAME/claude-tools/jupyter/.venv/bin/python",
+          "args": ["/Users/YOUR_USERNAME/claude-tools/jupyter/mcp_jupyter_server.py"]
+        },
+        "github": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-github"],
+          "env": {
+            "GITHUB_TOKEN": "your_github_token"
+          }
+        }
+      }
+    }
+  }
+}
