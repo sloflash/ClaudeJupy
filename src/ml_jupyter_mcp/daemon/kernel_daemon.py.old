@@ -59,20 +59,17 @@ class KernelDaemon:
                 kernel_env['VIRTUAL_ENV'] = str(venv_path)
                 kernel_env['PATH'] = f"{venv_path / 'bin'}:{kernel_env.get('PATH', '')}"
                 
-                # Start kernel with venv Python
-                self.kernel_manager = jupyter_client.KernelManager(kernel_name='python3')
-                self.kernel_manager.kernel_cmd = [
-                    str(python_path), '-m', 'ipykernel_launcher',
-                    '-f', '{connection_file}'
-                ]
+                # Start kernel using registered claude-jupy kernelspec
+                self.kernel_manager = jupyter_client.KernelManager(kernel_name='claude-jupy')
+                # Only set environment, let kernelspec handle the command
                 self.kernel_manager.env = kernel_env
             else:
                 print("⚠️ .venv exists but Python not found, using system Python")
-                self.kernel_manager = jupyter_client.KernelManager(kernel_name='python3')
+                self.kernel_manager = jupyter_client.KernelManager(kernel_name='claude-jupy')
         else:
             print("⚠️ No UV environment found, using system Python")
             print("💡 Recommended: Create a UV environment with 'uv venv'")
-            self.kernel_manager = jupyter_client.KernelManager(kernel_name='python3')
+            self.kernel_manager = jupyter_client.KernelManager(kernel_name='claude-jupy')
         
         self.kernel_manager.start_kernel()
         self.kernel_client = self.kernel_manager.client()

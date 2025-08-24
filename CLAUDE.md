@@ -6,6 +6,7 @@ When working with Jupyter notebooks in this project, **ALWAYS** follow this work
 
 ### 1. Environment Setup
 - **ALWAYS** tie notebooks to the `.venv` from this folder as the Jupyter kernel
+- **ALWAYS** use only the `claude-jupy` kernel - ignore any other kernels like `python3` that may exist on the system
 - Verify the kernel connection is using the correct Python environment before executing any cells
 - Use `jupyter_initialize(working_dir='.')` to set up the environment
 

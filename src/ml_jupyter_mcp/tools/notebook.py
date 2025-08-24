@@ -4,8 +4,10 @@ Notebook Management Tools - Create, edit, and manage Jupyter notebooks
 
 import nbformat
 import json
+import subprocess
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+from .kernel_setup import ensure_kernel_registered
 
 def get_kernel_connection_info() -> Optional[Dict[str, Any]]:
     """Get kernel connection info from the daemon's connection file"""
@@ -63,17 +65,41 @@ def register(mcp):
         # Add metadata with kernel connection if available
         kernel_info = get_kernel_connection_info()
         
-        nb.metadata = {
-            'kernelspec': {
-                'display_name': 'Python 3 (MCP)',
-                'language': 'python',
-                'name': 'python3'
-            },
-            'language_info': {
-                'name': 'python',
-                'version': '3.11.0'
+        # Ensure kernel is registered
+        ensure_kernel_registered()
+        
+        # Check if claude-jupy kernel is available
+        try:
+            result = subprocess.run(['jupyter', 'kernelspec', 'list'], capture_output=True, text=True)
+            has_claude_kernel = 'claude-jupy' in result.stdout
+        except:
+            has_claude_kernel = False
+        
+        # Use claude-jupy kernel if available, otherwise python3
+        if has_claude_kernel:
+            nb.metadata = {
+                'kernelspec': {
+                    'display_name': 'Claude Jupy Environment',
+                    'language': 'python',
+                    'name': 'claude-jupy'
+                },
+                'language_info': {
+                    'name': 'python',
+                    'version': '3.11.0'
+                }
             }
-        }
+        else:
+            nb.metadata = {
+                'kernelspec': {
+                    'display_name': 'Python 3',
+                    'language': 'python',
+                    'name': 'python3'
+                },
+                'language_info': {
+                    'name': 'python',
+                    'version': '3.11.0'
+                }
+            }
         
         # If we have kernel connection info, add it to metadata
         if kernel_info and kernel_info.get('connection_file'):
@@ -81,8 +107,6 @@ def register(mcp):
                 'connection_file': kernel_info['connection_file'],
                 'session_id': session_id or 'default'
             }
-            # Also update kernelspec to indicate MCP kernel
-            nb.metadata['kernelspec']['display_name'] = 'Python 3 (MCP Kernel)'
         
         # Apply template
         if template == "data_analysis":

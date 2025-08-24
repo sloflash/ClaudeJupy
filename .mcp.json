@@ -36,7 +36,10 @@
         "use_local_venv": true,
         "venv_path": ".venv",
         "package_manager": "uv",
-        "never_use_pip": true
+        "never_use_pip": true,
+        "kernel_name": "claude-jupy",
+        "ignore_other_kernels": true,
+        "kernel_note": "ALWAYS use claude-jupy kernel only, ignore python3 or other kernels"
       },
       "execution_rules": {
         "sequential_only": true,
