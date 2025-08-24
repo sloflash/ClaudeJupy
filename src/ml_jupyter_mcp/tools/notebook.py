@@ -3,8 +3,29 @@ Notebook Management Tools - Create, edit, and manage Jupyter notebooks
 """
 
 import nbformat
+import json
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+
+def get_kernel_connection_info() -> Optional[Dict[str, Any]]:
+    """Get kernel connection info from the daemon's connection file"""
+    # Look for the kernel connection file
+    connection_file_paths = [
+        Path.cwd() / '.kernel_connection.json',
+        Path(__file__).parent.parent / '.kernel_connection.json',  # src/.kernel_connection.json
+        Path(__file__).parent.parent.parent / '.kernel_connection.json',  # project root
+        Path.home() / '.kernel_connection.json'
+    ]
+    
+    for conn_file in connection_file_paths:
+        if conn_file.exists():
+            try:
+                with open(conn_file, 'r') as f:
+                    return json.load(f)
+            except Exception:
+                continue
+    
+    return None
 
 def register(mcp):
     """Register notebook tools with the MCP server"""
@@ -39,10 +60,12 @@ def register(mcp):
         # Create notebook
         nb = nbformat.v4.new_notebook()
         
-        # Add metadata
+        # Add metadata with kernel connection if available
+        kernel_info = get_kernel_connection_info()
+        
         nb.metadata = {
             'kernelspec': {
-                'display_name': 'Python 3',
+                'display_name': 'Python 3 (MCP)',
                 'language': 'python',
                 'name': 'python3'
             },
@@ -51,6 +74,15 @@ def register(mcp):
                 'version': '3.11.0'
             }
         }
+        
+        # If we have kernel connection info, add it to metadata
+        if kernel_info and kernel_info.get('connection_file'):
+            nb.metadata['kernel_info'] = {
+                'connection_file': kernel_info['connection_file'],
+                'session_id': session_id or 'default'
+            }
+            # Also update kernelspec to indicate MCP kernel
+            nb.metadata['kernelspec']['display_name'] = 'Python 3 (MCP Kernel)'
         
         # Apply template
         if template == "data_analysis":
@@ -126,6 +158,18 @@ def register(mcp):
                 'status': 'error',
                 'error': f"Could not read notebook: {str(e)}"
             }
+        
+        # Update kernel info if available and not already set
+        if 'kernel_info' not in nb.metadata:
+            kernel_info = get_kernel_connection_info()
+            if kernel_info and kernel_info.get('connection_file'):
+                nb.metadata['kernel_info'] = {
+                    'connection_file': kernel_info['connection_file'],
+                    'session_id': session_id or 'default'
+                }
+                # Update kernelspec display name
+                if 'kernelspec' in nb.metadata:
+                    nb.metadata['kernelspec']['display_name'] = 'Python 3 (MCP Kernel)'
         
         # Create new cell
         if cell_type == 'code':
@@ -242,6 +286,18 @@ def register(mcp):
                 'status': 'error',
                 'error': f"Could not read notebook: {str(e)}"
             }
+        
+        # Update kernel info if available and not already set
+        if 'kernel_info' not in nb.metadata:
+            kernel_info = get_kernel_connection_info()
+            if kernel_info and kernel_info.get('connection_file'):
+                nb.metadata['kernel_info'] = {
+                    'connection_file': kernel_info['connection_file'],
+                    'session_id': session_id or 'default'
+                }
+                # Update kernelspec display name
+                if 'kernelspec' in nb.metadata:
+                    nb.metadata['kernelspec']['display_name'] = 'Python 3 (MCP Kernel)'
         
         # Check cell index
         if cell_index >= len(nb.cells):
